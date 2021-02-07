@@ -24,20 +24,22 @@ exports.getQuestionList = async (LIMIT, OFFSET, ID, ORDER, SEARCH) => {
     let questionList 
     if (h.checkNullQueryAll(ID)) {
         if (!h.checkNullQueryAll(SEARCH)) {
-            questionList = await db('TR_QUESTION').whereRaw(`"C_STATUS_ID" = 1 ${!h.checkNullQueryAll(OFFSET)?`AND "ID" ${ORDER == 'desc' || ORDER == 'DESC' ? '<' : '>'} ${OFFSET}`:''} AND ("V_AUTHOR_NAME" ilike ? OR V_QUESTION ilike ? )`,[SEARCH, SEARCH])
+            questionList = await db('TR_QUESTION').whereRaw(`"C_STATUS_ID" = 1 ${!h.checkNullQueryAll(OFFSET)?`AND "ID" ${ORDER == 'desc' || ORDER == 'DESC' ? '<' : '>'} ${OFFSET}`:''} AND ("V_AUTHOR_NAME" ilike ? OR "V_QUESTION" ilike ? )`,[`%${SEARCH}%`, `%${SEARCH}%`])
         } else {
             questionList = await db('TR_QUESTION').whereRaw(`"C_STATUS_ID" = 1 ${!h.checkNullQueryAll(OFFSET)?`AND "ID" ${ORDER == 'desc' || ORDER == 'DESC' ? '<' : '>'} ${OFFSET}`:''}`)
         }
     } else {
-        questionList = await db('TR_QUESTION').whereRaw(`"C_STATUS_ID" = 1 ${!h.checkNullQueryAll(OFFSET)?`AND "ID" ${ORDER == 'desc' || ORDER == 'DESC' ? '<' : '>'} ${OFFSET}`:''} AND "ID" = ? ${!h.checkNullQueryAll(SEARCH)?`AND ("V_AUTHOR_NAME" ilike ? OR V_QUESTION ilike ? )`:''}`,!h.checkNullQueryAll(SEARCH)?[ID, SEARCH, SEARCH]:[ID])
+        questionList = await db('TR_QUESTION').whereRaw(`"C_STATUS_ID" = 1 ${!h.checkNullQueryAll(OFFSET)?`AND "ID" ${ORDER == 'desc' || ORDER == 'DESC' ? '<' : '>'} ${OFFSET}`:''} AND "ID" = ? ${!h.checkNullQueryAll(SEARCH)?`AND ("V_AUTHOR_NAME" ilike ? OR "V_QUESTION" ilike ? )`:''}`,!h.checkNullQueryAll(SEARCH)?[ID, `%${SEARCH}%`, `%${SEARCH}%`]:[ID])
     }
     // TODO : join dengan catgegorynya
-    let ids = questionList.map(x => x.ID)
-    let categories = await db('TR_QUESTION_CATEGORY').whereRaw(`"C_STATUS_ID" = 1 AND "C_QUESTION_ID" in (${ids.map(x => `'${x}'`)})`)
-    let commentCount = await db.select('C_QUESTION_ID').from('TR_QUESTION_REPLY').whereRaw(`"C_STATUS_ID" = 1`).groupBy('C_QUESTION_ID').count('ID as TOTAL')
-    questionList = questionList.map(x => {
-        return {...x, C_CATEGORY_ID: categories.filter(y => y.C_QUESTION_ID == x.ID).map(x => x.C_CATEGORY_ID), V_REPLY_COUNT: commentCount.filter(y => y.C_QUESTION_ID == x.ID).map(x => x.TOTAL)}
-    })
+    if (!h.checkNullQueryAll(questionList)) {
+        let ids = questionList.map(x => x.ID)
+        let categories = await db('TR_QUESTION_CATEGORY').whereRaw(`"C_STATUS_ID" = 1 AND "C_QUESTION_ID" in (${ids.map(x => `'${x}'`)})`)
+        let commentCount = await db.select('C_QUESTION_ID').from('TR_QUESTION_REPLY').whereRaw(`"C_STATUS_ID" = 1`).groupBy('C_QUESTION_ID').count('ID as TOTAL')
+        questionList = questionList.map(x => {
+            return {...x, C_CATEGORY_ID: categories.filter(y => y.C_QUESTION_ID == x.ID).map(x => x.C_CATEGORY_ID), V_REPLY_COUNT: commentCount.filter(y => y.C_QUESTION_ID == x.ID).map(x => x.TOTAL)}
+        })
+    }
 
     return constants.okSample(questionList)
     
