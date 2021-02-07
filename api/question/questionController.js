@@ -8,7 +8,8 @@ exports.getListQuestion = async (req, res) => {
     let OFFSET = req.query.OFFSET
     let ID = req.query.ID
     let ORDER = req.query.ORDER
-    let result = await list.getQuestionList(LIMIT, OFFSET, ID, ORDER)
+    let SEARCH = req.query.SEARCH
+    let result = await list.getQuestionList(LIMIT, OFFSET, ID, ORDER, SEARCH)
     return res.status(result.status).json(result); 
 }
 
