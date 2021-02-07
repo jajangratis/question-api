@@ -1,0 +1,12 @@
+.env
+.idea
+node_modules/
+config/databaseRoot.js
+config/key.js
+config/constant.js
+uploads/
+assets/
+NEEDTODELETE/
+.nyc_output/
+config/database.js.save/
+coverage/

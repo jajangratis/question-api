@@ -1,0 +1,42 @@
+{
+  "name": "question-api",
+  "version": "1.0.0",
+  "description": "QUESTION API",
+  "main": "app.js",
+  "scripts": {
+    "start": "set NODE_ENV=development DB_USERNAME=admin_pelicant_d DB_PASSWORD=7Urr6SFcQl DB_SELECT=admin_pelicant_d && nodemon app",
+    "start:windows": "NODE_ENV=development DB_USERNAME=admin_pelicant_d DB_PASSWORD=7Urr6SFcQl DB_SELECT=admin_pelicant_d nodemon app.js",
+    "start:production": "set NODE_ENV=production && nodemon app",
+    "start:production:windows": "NODE_ENV=production nodemon app.js",
+    "test": "jest --setupFiles dotenv/config --detectOpenHandles --passWithNoTests --forceExit ",
+    "test:watch": "jest --setupFiles dotenv/config --detectOpenHandles --watchAll --passWithNoTests"
+  },
+  "keywords": [
+    "nodejs"
+  ],
+  "author": "QUESTION API",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "base-64": "^0.1.0",
+    "body-parser": "^1.18.3",
+    "config": "^3.3.3",
+    "connect-timeout": "^1.9.0",
+    "cors": "^2.8.5",
+    "dotenv": "^6.2.0",
+    "express": "^4.16.3",
+    "helmet": "^3.23.3",
+    "jest": "^24.9.0",
+    "jsonwebtoken": "^8.3.0",
+    "knex": "^0.15.2",
+    "moment": "^2.29.1",
+    "morgan": "^1.10.0",
+    "multer": "^1.3.1",
+    "pg": "^7.18.2",
+    "redis": "^2.8.0",
+    "validator": "^10.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.9"
+  }
+}
