@@ -34,10 +34,18 @@ exports.getQuestionList = async (LIMIT, OFFSET, ID, ORDER, SEARCH) => {
     // TODO : join dengan catgegorynya
     if (!h.checkNullQueryAll(questionList)) {
         let ids = questionList.map(x => x.ID)
-        let categories = await db('TR_QUESTION_CATEGORY').whereRaw(`"C_STATUS_ID" = 1 AND "C_QUESTION_ID" in (${ids.map(x => `'${x}'`)})`)
+        // let categories = await db.distinct('*').from('TR_QUESTION_CATEGORY').whereRaw(`"C_STATUS_ID" = 1 AND "C_QUESTION_ID" in (${ids.map(x => `'${x}'`)})`)
+        let categories = await db.raw(`SELECT DISTINCT("C_CATEGORY_ID") AS "C_CATEGORY_ID", "C_QUESTION_ID" FROM "TR_QUESTION_CATEGORY" WHERE "C_STATUS_ID" = 1 AND "C_QUESTION_ID" in (${ids.map(x => `'${x}'`)})`)
+        categories = categories.rows
         let commentCount = await db.select('C_QUESTION_ID').from('TR_QUESTION_REPLY').whereRaw(`"C_STATUS_ID" = 1`).groupBy('C_QUESTION_ID').count('ID as TOTAL')
         questionList = questionList.map(x => {
-            return {...x, C_CATEGORY_ID: categories.filter(y => y.C_QUESTION_ID == x.ID).map(x => x.C_CATEGORY_ID), V_REPLY_COUNT: commentCount.filter(y => y.C_QUESTION_ID == x.ID).map(x => x.TOTAL)}
+            let V_REPLY_COUNT = commentCount.filter(y => y.C_QUESTION_ID == x.ID).map(x => x.TOTAL)
+            if (h.checkNullQueryAll(V_REPLY_COUNT)) {
+                V_REPLY_COUNT = '0'
+            } else {
+                V_REPLY_COUNT = V_REPLY_COUNT[0]
+            }
+            return {...x, C_CATEGORY_ID: categories.filter(y => y.C_QUESTION_ID == x.ID).map(x => x.C_CATEGORY_ID), V_REPLY_COUNT}
         })
     }
 
