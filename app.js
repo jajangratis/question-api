@@ -35,7 +35,7 @@ app.set('view engine', 'ejs')
 /**
  * End Point Access
  */
-app.use('/profiling/api/v1', router);
+app.use('/api/v1', router);
 app.use(timeout(400000));
 app.use(haltOnTimedout);
 
