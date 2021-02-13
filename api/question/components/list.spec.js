@@ -9,4 +9,8 @@ describe('Test Case List Master', () => {
         let result = await list.getQuestionList(10, 0, undefined, 'desc')
         expect(result.status).toEqual(200)
     });
+    it('should return 10 data', async () => {
+        let result = await list.getQuestionList(10, 0, undefined, 'desc', 'rem', 'education')
+        expect(result.status).toEqual(200)
+    });
 })

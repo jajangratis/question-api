@@ -9,7 +9,8 @@ exports.getListQuestion = async (req, res) => {
     let ID = req.query.ID
     let ORDER = req.query.ORDER
     let SEARCH = req.query.SEARCH
-    let result = await list.getQuestionList(LIMIT, OFFSET, ID, ORDER, SEARCH)
+    let CATEGORY = req.query.CATEGORY
+    let result = await list.getQuestionList(LIMIT, OFFSET, ID, ORDER, SEARCH, CATEGORY)
     return res.status(result.status).json(result); 
 }
 
